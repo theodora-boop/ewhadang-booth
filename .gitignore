@@ -1,0 +1,16 @@
+# 백엔드 코드 — 공개 호스팅 금지
+apps-script-code.gs
+
+# 데이터 템플릿 — Vercel 호스팅 대상 아님
+이화당-스프레드시트-템플릿.csv
+
+# 라이트 테마 미사용 버전
+index-light.html
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
