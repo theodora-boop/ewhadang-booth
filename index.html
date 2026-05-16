@@ -399,6 +399,18 @@ select {
   padding-right: 38px;
 }
 
+/* 드롭다운 펼쳤을 때 option 스타일 — 예약 가능 vs 예약 마감 시각 구분 */
+#time option {
+  background: var(--bg-card);
+  color: var(--text);
+  padding: 8px;
+}
+#time option:disabled {
+  background: #ffffff;
+  color: #999999;
+  font-style: italic;
+}
+
 /* === 옵션 카드 === */
 .option-grid {
   display: grid;
