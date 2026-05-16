@@ -934,7 +934,7 @@ for (let totalMin = 9 * 60; totalMin <= 15 * 60; totalMin += 20) {
 }
 
 // === 구글 시트 자동 저장 ===
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRki-kW5Pg_l5xf7e8YELPzi6EyPPZWO2OJe8IhgSzr3VDfUiNJcq902AAJgz9UVPPHA/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvHY0i3GTSdPoyQpOTZufpa2Hvv3I8DjX8IU19UT3lXXBqzOvQ6Hjmw_3UMX2LPnSZ/exec';
 
 const form = document.getElementById('reservationForm');
 const btn = document.getElementById('submitBtn');
@@ -942,15 +942,35 @@ const successScreen = document.getElementById('successScreen');
 const successSummary = document.getElementById('successSummary');
 
 // === 이미 예약된 시간 슬롯 조회 → 해당 option disabled 처리 ===
+// 응답 형식이 "HH:mm" 일 수도 있고, Date 객체 문자열("Sat Dec 30 1899 09:00:00 GMT...")일 수도 있어
+// 어느 쪽이든 HH:mm 으로 정규화해서 매칭한다.
+function extractHHmm(raw) {
+  if (raw == null) return '';
+  const s = String(raw).trim();
+  // 형식 1: "09:00" 또는 "9:00"
+  const direct = s.match(/^(\d{1,2}):(\d{2})$/);
+  if (direct) return ('0' + direct[1]).slice(-2) + ':' + direct[2];
+  // 형식 2: Date 문자열 안의 "HH:mm:ss" → 앞 5글자만
+  const inside = s.match(/(\d{2}):(\d{2}):\d{2}/);
+  if (inside) return inside[1] + ':' + inside[2];
+  // 형식 3: ISO 문자열 안의 "THH:mm"
+  const iso = s.match(/T(\d{2}):(\d{2})/);
+  if (iso) return iso[1] + ':' + iso[2];
+  return '';
+}
+
 async function loadBookedSlots() {
   if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-    // 아직 Apps Script URL이 설정되지 않은 상태 — 슬롯 차단 스킵
     return;
   }
   try {
     const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET' });
     const json = await res.json();
-    const booked = new Set(json.booked || []);
+    const booked = new Set(
+      (json.booked || [])
+        .map(extractHHmm)
+        .filter(v => v.length === 5)
+    );
     timeSelect.querySelectorAll('option').forEach(opt => {
       if (opt.value && booked.has(opt.value)) {
         opt.disabled = true;
