@@ -588,6 +588,7 @@ select {
   color: var(--gold-bright);
 }
 .companion-intro strong { color: var(--gold-bright); }
+.companion-intro[hidden] { display: none !important; }
 .companion-time-hint {
   margin-top: 10px;
   padding: 10px 14px;
@@ -909,6 +910,16 @@ select {
       </div>
     </div>
 
+    <!-- 동반인 신청 안내 (companion 모드일 때 폼 최상단에 노출) -->
+    <div class="companion-intro" hidden>
+      <div class="companion-intro-title">👯 동반인 신청 안내</div>
+      <ul>
+        <li>한 15분 슬롯을 <strong>둘이서 나누어 상담</strong>합니다 (각자 약 7-8분)</li>
+        <li>음료(1,500원)는 <strong>두 분이 각각 한 잔씩</strong> 필요합니다</li>
+        <li>대표와 동반인이 <strong>각자 이 폼을 따로</strong> 작성해 주세요</li>
+      </ul>
+    </div>
+
     <!-- 1. 예약 정보 -->
     <div class="form-section">
       <div class="form-section-title">📜 예약 정보</div>
@@ -940,14 +951,6 @@ select {
 
       <!-- 동반인 정보 (companion 모드 전용) — 예약 시간 선택 전에 노출 -->
       <div class="companion-section" hidden>
-        <div class="companion-intro">
-          <div class="companion-intro-title">👯 동반인 신청 안내</div>
-          <ul>
-            <li>한 15분 슬롯을 <strong>둘이서 나누어 상담</strong>합니다 (각자 약 7-8분)</li>
-            <li>음료(1,500원)는 <strong>두 분이 각각 한 잔씩</strong> 필요합니다</li>
-            <li>대표와 동반인이 <strong>각자 이 폼을 따로</strong> 작성해 주세요</li>
-          </ul>
-        </div>
         <div class="form-group">
           <label class="form-label">신청 순서<span class="required">*</span></label>
           <div class="option-grid">
@@ -1226,6 +1229,7 @@ refreshSlotState();
 
 // === 신청 모드 토글 (혼자 / 동반인) ===
 const modeTabs = document.querySelectorAll('.mode-tab');
+const companionIntro = document.querySelector('.companion-intro');
 const companionSection = document.querySelector('.companion-section');
 const companionTimeHint = document.querySelector('.companion-time-hint');
 const companionPrimaryOnly = document.querySelector('.companion-primary-only');
@@ -1237,6 +1241,7 @@ const companionRoleRadios = document.querySelectorAll('input[name="companion_rol
 function setMode(mode) {
   currentMode = mode;
   modeTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  companionIntro.hidden = (mode !== 'companion');
   companionSection.hidden = (mode !== 'companion');
   companionTimeHint.hidden = (mode !== 'companion');
   if (mode === 'solo') {
