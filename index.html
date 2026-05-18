@@ -495,6 +495,81 @@ select {
   .name-type-card { padding: 12px 4px; }
 }
 
+/* === 신청 모드 탭 (혼자 / 동반인) === */
+.mode-tabs-wrapper {
+  margin: 0 0 30px;
+}
+.mode-tabs-question {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  text-align: center;
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+.mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.mode-tab {
+  position: relative;
+  padding: 18px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+.mode-tab .mode-tab-emoji { font-size: 26px; line-height: 1; }
+.mode-tab .mode-tab-title {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.mode-tab .mode-tab-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.01em;
+}
+.mode-tab:hover { border-color: var(--gold); }
+.mode-tab.active {
+  background: linear-gradient(135deg, var(--talisman-red), var(--talisman-red-deep));
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
+}
+.mode-tab.active .mode-tab-sub { color: var(--hanji); }
+
+/* === 동반인 정보 영역 === */
+.companion-section[hidden] { display: none !important; }
+.companion-primary-only[hidden],
+.companion-guest-only[hidden] { display: none !important; }
+.companion-time-hint {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(212, 175, 55, 0.08);
+  border-left: 3px solid var(--gold-bright);
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--hanji);
+}
+.companion-time-hint[hidden] { display: none !important; }
+.companion-time-hint strong { color: var(--gold-bright); }
+
+/* === 동반인 모드에서 잠긴 슬롯 색상 강조 === */
+#time option.companion-available {
+  color: var(--neon-pink);
+}
+
 /* === 아이돌 슬롯 === */
 .idol-slot {
   display: flex;
@@ -781,6 +856,23 @@ select {
 
   <form id="reservationForm" novalidate>
 
+    <!-- 신청 모드 (혼자 / 동반인) -->
+    <div class="mode-tabs-wrapper">
+      <div class="mode-tabs-question">먼저, 어떤 방식으로 점괘를 청하시나요?</div>
+      <div class="mode-tabs">
+        <button type="button" class="mode-tab active" data-mode="solo">
+          <span class="mode-tab-emoji">🌙</span>
+          <span class="mode-tab-title">혼자 신청</span>
+          <span class="mode-tab-sub">1인 15분 상담</span>
+        </button>
+        <button type="button" class="mode-tab" data-mode="companion">
+          <span class="mode-tab-emoji">👯</span>
+          <span class="mode-tab-title">동반인이 있어요</span>
+          <span class="mode-tab-sub">둘이 한 슬롯을 7-8분씩</span>
+        </button>
+      </div>
+    </div>
+
     <!-- 1. 예약 정보 -->
     <div class="form-section">
       <div class="form-section-title">📜 예약 정보</div>
@@ -815,6 +907,30 @@ select {
         <select id="time" name="time" required>
           <option value="">— 시간을 선택해 주세요 —</option>
         </select>
+        <div class="companion-time-hint" hidden>
+          ⓘ <strong>동반인 모드</strong> — 두 분이 따로 폼을 작성하고 <strong>같은 시간</strong>을 선택해 주세요. 동반인은 "동반인이 이미 신청했어요"를 선택하면 잠긴 슬롯도 고를 수 있습니다.
+        </div>
+      </div>
+
+      <!-- 동반인 정보 (companion 모드 전용) -->
+      <div class="companion-section" hidden>
+        <div class="form-group">
+          <label class="form-label">신청 순서<span class="required">*</span></label>
+          <div class="option-grid">
+            <label class="option-card"><input type="radio" name="companion_role" value="primary"><div class="option-content">제가 먼저 신청해요<br><small style="color: var(--text-dim); font-weight: 400;">(대표 예약자)</small></div></label>
+            <label class="option-card"><input type="radio" name="companion_role" value="guest"><div class="option-content">동반인이 이미 신청했어요<br><small style="color: var(--text-dim); font-weight: 400;">(같은 시간 선택)</small></div></label>
+          </div>
+        </div>
+        <div class="form-group companion-primary-only" hidden>
+          <label class="form-label" for="companion_name">동반인 이름<span class="required">*</span></label>
+          <input type="text" id="companion_name" name="companion_name" maxlength="20" placeholder="같이 오시는 분의 이름">
+          <div class="field-note">대표가 먼저 신청 후, 동반인은 따로 폼을 작성해 같은 시간을 선택합니다.</div>
+        </div>
+        <div class="form-group companion-guest-only" hidden>
+          <label class="form-label" for="primary_name">대표 예약자 이름<span class="required">*</span></label>
+          <input type="text" id="primary_name" name="primary_name" maxlength="20" placeholder="먼저 신청하신 분의 이름">
+          <div class="field-note">대표가 고른 시간과 똑같이 선택해 주세요. 잠긴 슬롯도 선택할 수 있습니다.</div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -976,29 +1092,60 @@ function extractHHmm(raw) {
   return '';
 }
 
-async function loadBookedSlots() {
+// === 신청 모드 상태 (혼자 / 동반인 + 동반인 역할) ===
+let currentMode = 'solo';            // 'solo' | 'companion'
+let currentCompanionRole = null;     // null | 'primary' | 'guest'
+
+// === 예약 슬롯 잠금: 가져오기와 적용을 분리 ===
+// bookedSlots는 한 번 가져와서 유지, 모드가 바뀔 때마다 applySlotLock()으로 다시 적용
+let bookedSlots = new Set();
+
+async function fetchBookedSlots() {
   if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_GOOGLE')) {
     return;
   }
   try {
     const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET' });
     const json = await res.json();
-    const booked = new Set(
+    bookedSlots = new Set(
       (json.booked || [])
         .map(extractHHmm)
         .filter(v => v.length === 5)
     );
-    timeSelect.querySelectorAll('option').forEach(opt => {
-      if (opt.value && booked.has(opt.value)) {
-        opt.disabled = true;
-        opt.textContent = opt.value + ' (예약 마감)';
-      }
-    });
+    applySlotLock();
   } catch (err) {
     console.warn('예약 슬롯 조회 실패:', err);
   }
 }
-loadBookedSlots();
+
+// 잠금 적용 — 혼자/대표 모드는 잠긴 슬롯을 disable, 동반자 모드는 잠긴 슬롯도 선택 가능
+function applySlotLock() {
+  const isCompanionGuest = (currentMode === 'companion' && currentCompanionRole === 'guest');
+  timeSelect.querySelectorAll('option').forEach(opt => {
+    if (!opt.value) return;
+    const isBooked = bookedSlots.has(opt.value);
+    opt.classList.remove('companion-available');
+    if (!isBooked) {
+      opt.disabled = false;
+      opt.textContent = opt.value;
+      return;
+    }
+    if (isCompanionGuest) {
+      opt.disabled = false;
+      opt.textContent = opt.value + ' (동반 예약 중)';
+      opt.classList.add('companion-available');
+    } else {
+      opt.disabled = true;
+      opt.textContent = opt.value + ' (예약 마감)';
+    }
+  });
+  // 모드가 바뀌면서 현재 선택이 disable된 슬롯이면 선택 초기화
+  if (timeSelect.selectedOptions[0] && timeSelect.selectedOptions[0].disabled) {
+    timeSelect.value = '';
+  }
+}
+
+fetchBookedSlots();
 
 // === 아이돌 슬롯 관리 ===
 const idolSlots = document.getElementById('idolSlots');
@@ -1033,9 +1180,63 @@ idolSlots.addEventListener('click', (e) => {
 
 refreshSlotState();
 
+// === 신청 모드 토글 (혼자 / 동반인) ===
+const modeTabs = document.querySelectorAll('.mode-tab');
+const companionSection = document.querySelector('.companion-section');
+const companionTimeHint = document.querySelector('.companion-time-hint');
+const companionPrimaryOnly = document.querySelector('.companion-primary-only');
+const companionGuestOnly = document.querySelector('.companion-guest-only');
+const companionNameInput = document.getElementById('companion_name');
+const primaryNameInput = document.getElementById('primary_name');
+const companionRoleRadios = document.querySelectorAll('input[name="companion_role"]');
+
+function setMode(mode) {
+  currentMode = mode;
+  modeTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  companionSection.hidden = (mode !== 'companion');
+  companionTimeHint.hidden = (mode !== 'companion');
+  if (mode === 'solo') {
+    currentCompanionRole = null;
+    companionRoleRadios.forEach(r => { r.checked = false; });
+    companionPrimaryOnly.hidden = true;
+    companionGuestOnly.hidden = true;
+    companionNameInput.required = false;
+    primaryNameInput.required = false;
+    companionNameInput.value = '';
+    primaryNameInput.value = '';
+  }
+  applySlotLock();
+}
+
+modeTabs.forEach(tab => {
+  tab.addEventListener('click', () => setMode(tab.dataset.mode));
+});
+
+companionRoleRadios.forEach(r => {
+  r.addEventListener('change', (e) => {
+    currentCompanionRole = e.target.value;
+    const isPrimary = (currentCompanionRole === 'primary');
+    const isGuest = (currentCompanionRole === 'guest');
+    companionPrimaryOnly.hidden = !isPrimary;
+    companionGuestOnly.hidden = !isGuest;
+    companionNameInput.required = isPrimary;
+    primaryNameInput.required = isGuest;
+    if (!isPrimary) companionNameInput.value = '';
+    if (!isGuest) primaryNameInput.value = '';
+    applySlotLock();
+  });
+});
+
 // === 폼 제출 ===
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  // === 동반인 모드 추가 검증 ===
+  if (currentMode === 'companion' && !currentCompanionRole) {
+    alert('동반인 모드입니다. "신청 순서"를 선택해 주세요.');
+    companionSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
 
   if (!form.checkValidity()) {
     form.reportValidity();
@@ -1071,6 +1272,21 @@ form.addEventListener('submit', async (e) => {
   }
   data.timestamp = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
 
+  // === 예약 유형 명시 + 동반인 필드 정리 (시트 컬럼: 예약유형/동반인역할/동반인이름/대표예약자이름) ===
+  data.reservation_type = (currentMode === 'companion') ? '동반' : '혼자';
+  if (currentMode === 'companion') {
+    data.companion_role = (currentCompanionRole === 'primary') ? '대표' : '동반자';
+    if (currentCompanionRole === 'primary') {
+      delete data.primary_name;
+    } else {
+      delete data.companion_name;
+    }
+  } else {
+    delete data.companion_role;
+    delete data.companion_name;
+    delete data.primary_name;
+  }
+
   // 아이돌 슬롯 병합
   data.past_idols = Array.from(idolSlots.querySelectorAll('.idol-slot'))
     .map(slot => {
@@ -1101,10 +1317,23 @@ form.addEventListener('submit', async (e) => {
       console.log('[테스트 모드] 예약 데이터:', data);
     }
 
+    let companionInfoHtml = '';
+    if (currentMode === 'companion') {
+      if (currentCompanionRole === 'primary') {
+        companionInfoHtml =
+          '<strong>예약 유형:</strong> 동반 예약 (대표)<br>' +
+          '<strong>동반인:</strong> ' + escapeHTML(data.companion_name) + '<br>';
+      } else {
+        companionInfoHtml =
+          '<strong>예약 유형:</strong> 동반 예약 (동반자)<br>' +
+          '<strong>대표 예약자:</strong> ' + escapeHTML(data.primary_name) + '<br>';
+      }
+    }
     successSummary.innerHTML =
       '<strong>예약자:</strong> ' + escapeHTML(data.name) + ' (' + escapeHTML(data.name_type) + ')<br>' +
       '<strong>전화번호:</strong> ' + escapeHTML(data.phone) + '<br>' +
       '<strong>예약 시간:</strong> ' + escapeHTML(data.time) + '<br>' +
+      companionInfoHtml +
       '<strong>접수 시각:</strong> ' + escapeHTML(data.timestamp);
 
     document.querySelector('.container').classList.add('success-mode');
