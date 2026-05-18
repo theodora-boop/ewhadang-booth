@@ -902,17 +902,7 @@ select {
         <div class="field-note">최애 점지를 위해 사용됩니다</div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="time">예약 시간<span class="required">*</span></label>
-        <select id="time" name="time" required>
-          <option value="">— 시간을 선택해 주세요 —</option>
-        </select>
-        <div class="companion-time-hint" hidden>
-          ⓘ <strong>동반인 모드</strong> — 두 분이 따로 폼을 작성하고 <strong>같은 시간</strong>을 선택해 주세요. 동반인은 "동반인이 이미 신청했어요"를 선택하면 잠긴 슬롯도 고를 수 있습니다.
-        </div>
-      </div>
-
-      <!-- 동반인 정보 (companion 모드 전용) -->
+      <!-- 동반인 정보 (companion 모드 전용) — 예약 시간 선택 전에 노출 -->
       <div class="companion-section" hidden>
         <div class="form-group">
           <label class="form-label">신청 순서<span class="required">*</span></label>
@@ -930,6 +920,16 @@ select {
           <label class="form-label" for="primary_name">대표 예약자 이름<span class="required">*</span></label>
           <input type="text" id="primary_name" name="primary_name" maxlength="20" placeholder="먼저 신청하신 분의 이름">
           <div class="field-note">대표가 고른 시간과 똑같이 선택해 주세요. 잠긴 슬롯도 선택할 수 있습니다.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="time">예약 시간<span class="required">*</span></label>
+        <select id="time" name="time" required>
+          <option value="">— 시간을 선택해 주세요 —</option>
+        </select>
+        <div class="companion-time-hint" hidden>
+          ⓘ <strong>동반인 모드</strong> — 두 분이 따로 폼을 작성하고 <strong>같은 시간</strong>을 선택해 주세요. 동반인은 "동반인이 이미 신청했어요"를 선택하면 잠긴 슬롯도 고를 수 있습니다.
         </div>
       </div>
 
